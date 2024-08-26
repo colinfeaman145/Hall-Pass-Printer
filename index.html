@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>NCWHS Hall Pass</title>
+  <link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+<br>
+<br>
+
+<body>
+  <!--Borrowed code-->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+  <!--Student-->
+  <header>
+    <button onclick="openHamburger()" id="hamburgerMenu">&#9776;</button> <!--burger-->
+    <div id="loginMessage">**In order to add names to the dropdowns, a teacher must login**</div>
+  </header>
+  <table id="mainTable"><!--To organize dropdowns, pass display, and check in horizontally-->
+    <tr id="mainTableR">
+      <td id="dropdownTableD"><!--Dropdown horizontal organization-->
+        <div class="passElementHolderFour"><!--Gray background-->
+          <label for="hour" class="menuLabel">Hour:</label>
+          <select id="hour" class="select" onchange="hourChange(this)">
+            <option>---Choose hour---</option>
+            <option>0</option>
+            <option>1</option>
+            <option>2</option>
+            <option>3</option>
+            <option>4</option>
+            <option>5</option>
+            <option>6</option>
+            <option>7</option>
+            <option>8</option>
+          </select>
+          <label for="student" class="menuLabel">Student name:</label> 
+          <select id="student" onchange="studentChange(this)">
+            <option>---Choose name---</option>
+          </select>
+          <br>
+          <label for="reason" class="menuLabel">Reason:</label>
+          <select id="reason" onchange="reasonChange(this)">
+            <option>---Choose reason---</option>
+            <option>Restroom</option>
+            <option>Retrieving instrument</option>
+            <option>Forgotten bag</option>
+            <option>IMC visit</option>
+            <option>Held late</option>
+            <option>Other</option>
+          </select>
+          <br>
+          <input class="shownInput" id="reasonOther" style="display: none;"></input><!--When other is chosen this text field appears-->
+          <label for="to" class="menuLabel">Destination:</label>
+          <select id="to" onchange="toChange(this)">
+            <option>---Choose destination---</option>
+            <option>IMC</option>
+            <option>Guidance</option>
+            <option>Nurse</option>
+            <option>Restroom</option>
+            <option>Main Office</option>
+            <option>Other</option>
+          </select>
+          <br>
+          <input class="shownInput" id="toOther" style="display: none;"></input><!--When other is chosen this text field appears-->
+        </div> 
+      </td>
+      <td id="printTableD"><!--Pass display horizontal organization-->
+        <div class="passElementHolder"><!--White background-->
+          <div id="passElement">
+            Student.........................<br>Reason..........................<br>From............................<br>To..............................<br>Date...........&nbsp;&nbsp;Time...........<br>Staff...........................<br>~<br><br>________________________________<br>
+          </div><!--Super fragile thing, dont change html plz this is copied to seperate window for printing-->
+        </div>
+        <button class="print-button"><span class="print-icon" onclick="PrintStart()"></span></button><!--Cool printer button-->
+      </td>
+      <td id="checkBackInTable"><!--Check in horizontal organization-->
+        <div class="passElementHolderThree"><!--Gray background-->
+          <select id="checkBackIn">
+            <option>---Select Name---</option>
+          </select>
+          <button id="checkInButton" onclick="addToLog(2)">Check back in</button>
+        </div>
+      </td>
+    </tr>
+  </table>
+
+
+  <footer>
+    <div class="footer">
+      <div class="footerElements">
+        <button onclick="document.getElementById('id01').style.display='block'" style="width:auto;"
+          id="loginButton">Login</button>
+
+        <div class="logout" type="button" id="logoutText"
+          onclick="document.getElementById('id05').style.display='block'">Logged in as: </div>
+      </div>
+
+  </footer>
+</body>
+
+</html>
+
+
+
+
+
+
+<!--Code for login system-->
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>/*One of two style elements, other being style.css. This contains newer elements added to webpage and popup-type styling*/
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    /* Full-width input fields */
+    input[type=text],
+    input[type=password],
+    input[type=number] {
+      width: 100%;
+      padding: 12px 20px;
+      margin: 8px 0;
+      display: inline-block;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+      font-size: 13px
+    }
+
+    /*removes side arrows*/
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    /* Set a style for all buttons */
+    button {
+      border-radius: 4px;
+      background-color: #ababab;
+      color: white;
+      padding: 14px 20px;
+      margin: 8px 0;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+      font-size: 20px;
+    }
+
+    button:hover {
+      opacity: 0.8;
+    }
+
+    .dropdown {
+      background-color: #5c5c5c;
+      color: white;
+      padding: 14px 200px;
+      margin: 8px 0;
+      border: none;
+      cursor: pointer;
+      width: 100px;
+      font-size: 16px;
+    }
+
+    /* Center the image and position the close button */
+    .imgcontainer {
+      text-align: center;
+      margin: 6px 0 6px 0;
+      position: relative;
+    }
+
+    .containerTwo {
+      padding: 16px;
+      font-size: 17px;
+      color: black;
+    }
+
+    .menuLabel {
+      font-size: 17px;
+      color: black;
+      font-weight: bold;
+    }
+
+    /*container for the create account link */
+    .containerAcc {
+      padding: 8px;
+    }
+
+    /* The Modal (background) */
+    .modal {
+      display: none;
+      /* Hidden by default */
+      position: fixed;
+      /* Stay in place */
+      z-index: 1;
+      /* Sit on top */
+      left: 0;
+      top: 0;
+      width: 100%;
+      /* Full width */
+      height: 100%;
+      /* Full height */
+      overflow: auto;
+      /* Enable scroll if needed */
+      background-color: rgb(0, 0, 0);
+      /* Fallback color */
+      background-color: rgba(0, 0, 0, 0.4);
+      /* Black w/ opacity */
+      padding-top: 60px;
+    }
+
+    /* Modal Content/Box */
+    .modal-content {
+      background-color: #fefefe;
+      margin: 5% auto 15% auto;
+      /* 5% from the top, 15% from the bottom and centered */
+      border: 1px solid #888;
+      width: 40%;
+      /* Could be more or less, depending on screen size */
+    }
+
+    /* The Close Button (x) */
+    .close {
+      position: absolute;
+      right: 25px;
+      top: 0;
+      color: #000;
+      font-size: 35px;
+      font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+      font-weight: bold;
+      color: red;
+      cursor: pointer;
+    }
+
+    /* Add Zoom Animation */
+    .animate {
+      -webkit-animation: animatezoom 0.6s;
+      animation: animatezoom 0.6s
+    }
+
+    @-webkit-keyframes animatezoom {
+      from {
+        -webkit-transform: scale(0)
+      }
+
+      to {
+        -webkit-transform: scale(1)
+      }
+    }
+
+    @keyframes animatezoom {
+      from {
+        transform: scale(0)
+      }
+
+      to {
+        transform: scale(1)
+      }
+    }
+
+    @keyframes fadeIn {
+      0% {
+        opacity: 0;
+      }
+
+      100% {
+        opacity: 1;
+      }
+    }
+
+    .errorText {
+      color: red;
+      font-weight: bold;
+      margin: 4px 0;
+      animation: fadeIn .5s;
+    }
+
+    .confirmText {
+      color: green;
+      font-weight: bold;
+      margin: 4px 0;
+      animation: fadeIn .5s;
+    }
+
+    .newAcc {
+      color: blue
+    }
+
+    .newAcc:hover {
+      text-decoration: underline;
+      cursor: pointer;
+      opacity: 0.8;
+    }
+
+    a {
+      color: teal;
+      font-weight: bold;
+      padding: 6px;
+      top: 200px;
+    }
+
+    a:active,
+    a:link,
+    a:visited {
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: none;
+      opacity: 0.8;
+      cursor: help;
+    }
+
+    .popover-title {
+      font-size: 16px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .popover-content {
+      text-align: center;
+      font-size: 15px;
+      white-space: pre-line
+    }
+  </style>
+</head>
+
+<body>
+
+
+  <!--Class that brings up popup for login-->
+
+  <div id="id01" class="modal">
+    <form class="modal-content animate">
+      <div class="imgcontainer">
+        <span onclick="document.getElementById('id01').style.display='none'" class="close">&times;</span>
+      </div>
+
+
+      <div class="containerTwo">
+        <table>
+          <tr>
+            <td>
+              <label for="uname"><b>Email</b></label>
+            </td>
+            <td>
+              <div class="infoButton">
+                <a href="#" title="Requirments" data-toggle="popover" data-trigger="focus"
+                  data-content="Must be a Unit 5 account not owned by a student">&#9432;</a>
+              </div>
+            </td>
+          </tr>
+        </table>
+        <input type="text" placeholder="Enter Email" name="uname" id="username" required>
+
+        <table>
+          <tr>
+            <td>
+              <label for="psw"><b>Password</b></label>
+            </td>
+            <td>
+              <div class="infoButton">
+                <a href="#" title="Requirments" data-toggle="popover" data-trigger="focus"
+                  data-content="Must be at least 6 numerical digits">&#9432;</a>
+            </td>
+      </div>
+      </tr>
+      </table>
+      <input type="password" placeholder="Enter Password" name="psw" id="password" required>
+
+      <button onclick="confirm()" type="button">Login</button>
+  </div>
+  <div class="errorText" id="errorText" align="center"></div>
+
+  <div class="containerAcc" align="center">
+    <div class="newAcc" type="button" onclick="openCreateAcc()">Create new account</div>
+  </div>
+  </form>
+  </div>
+
+  <!--Opens box for create account modal-->
+  <div id="id02" class="modal">
+    <form class="modal-content animate">
+      <div class="imgcontainer">
+        <span onclick="document.getElementById('id02').style.display='none'" class="close">&times;</span>
+      </div>
+      <div class="containerTwo">
+        <label for="first"><b>First name</b></label>
+        <input type="text" placeholder="Enter First Name" name="first" id="first" required>
+
+        <label for="last"><b>Last name</b></label>
+        <input type="text" placeholder="Enter Last Name" name="last" id="last" required>
+
+        <table>
+          <tr>
+            <td>
+              <label for="uname"><b>Email</b></label>
+            </td>
+            <td>
+              <div class="infoButton">
+                <a href="#" title="Requirments" data-toggle="popover" data-trigger="focus" data-content="&#x2022; Must end in &quot;@unit5.org&quot; or &quot;@myunit5.org&quot; 
+        &#x2022; Must also be a teacher owned email">&#9432;</a>
+              </div>
+            </td>
+          </tr>
+        </table>
+        <input type="text" placeholder="Enter Email" name="uname" id="newUsername" required>
+
+        <table>
+          <tr>
+            <td>
+              <label for="psw"><b>Password</b></label>
+            </td>
+            <td>
+              <div class="infoButton">
+                <a href="#" title="Requirments" data-toggle="popover" data-trigger="focus" data-content="&#x2022; Must be made of only digits 
+        &#x2022; Must be at least six characters long">&#9432;</a>
+              </div>
+            </td>
+          </tr>
+        </table>
+        <input type="password" placeholder="Enter Password" name="psw" id="newPassword" required>
+
+        <label for="psw"><b>Confirm password</b></label>
+        <input type="password" placeholder="Enter same Password" name="psw" id="confirmPassword" required>
+
+        <div class="errorText" id="errorTextTwo" align="center"></div>
+        <button onclick="createAcc()" type="button">Create new account</button>
+      </div>
+
+    </form>
+  </div>
+
+
+  <!--opens pop up to add new data-->
+  <div id="id03" class="modal">
+    <form class="modal-content animate">
+      <div class="imgcontainer">
+        <span onclick="document.getElementById('id03').style.display='none'" class="close">&times;</span>
+      </div>
+      <div class="containerTwo">
+        <table>
+          <tr>
+            <td>
+              <label for="uname"><b>Student Full Name</b></label>
+            </td>
+            <td>
+              <div class="infoButton">
+                <a href="#" title="Information" data-toggle="popover" data-trigger="focus"
+                  data-content="&#x2022; Seperate a string of names with commas for mass entering">&#9432;</a>
+              </div>
+            </td>
+          </tr>
+        </table>
+        <input type="text" placeholder="Enter name" name="fname" id="fname" required>
+
+        <label for="psw"><b>Class period</b></label>
+        <select id="period" name="psw" class="classPeriodSelect" required>
+          <option>---Choose hour---</option>
+          <option>0</option>
+          <option>1</option>
+          <option>2</option>
+          <option>3</option>
+          <option>4</option>
+          <option>5</option>
+          <option>6</option>
+          <option>7</option>
+          <option>8</option>
+        </select>
+
+        <table>
+          <tr>
+            <td>
+              <label for="psw"><b>Room number</b></label>
+            </td>
+            <td>
+              <div class="infoButton">
+                <a href="#" title="Requirments" data-toggle="popover" data-trigger="focus"
+                  data-content="&#x2022; Must be a valid room number
+        &#x2022; Other accepted names include(&quot;South Gym&quot;, &quot;North Gym&quot;, &quot;IMC&quot;, &quot;Pool&quot;, &quot;Guidance Office&quot;, &quot;Main Office&quot;, and &quot;Nurse's Office&quot;)">&#9432;</a>
+              </div>
+            </td>
+          </tr>
+        </table>
+        <input type="text" placeholder="Enter room number" name="psw" id="roomNum" required>
+
+        <div class="errorText" id="errorTextThree" align="center"></div>
+        <button onclick="addStudent()" type="button">Add Student</button>
+      </div>
+    </form>
+  </div>
+
+  <!--opens pop up to see log of printed passes-->
+
+  <div id="id04" class="modal">
+    <form class="modal-content animate">
+      <div class="imgcontainer">
+        <span onclick="document.getElementById('id04').style.display='none'" class="close">&times;</span>
+      </div>
+      <div class="containerTwo">
+        <div class="title" id="logTitle">Student Log</div>
+        <div class="passElementHolderTwo" style=" font-size: 16px;">
+          <table id="logTable" class="tableOutline" style="margin:auto">
+            <tr>
+              <td class="tableOutline" style="width:32%; padding: 0 4px">Student</td>
+              <td class="tableOutline" style="padding: 0 6px">Period</td>
+              <td class="tableOutline" style="padding: 0 6px">Time left</td>
+              <td class="tableOutline" style="padding: 0 6px">Time returned</td>
+              <td class="tableOutline" style="padding: 0 6px">Time gone</td>
+            </tr>
+          </table>
+        </div>
+        <table style="width:100%">
+          <tr>
+            <td style="width:50%; padding: 0 10px">
+              <button onclick="moveLeft()" type="button">Previous day</button>
+            </td>
+            <td>
+              <button onclick="moveRight()" type="button">Next day</button>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </form>
+  </div>
+
+
+  <!--Logout-->
+  <div id="id05" class="modal">
+    <form class="modal-content animate">
+      <div class="imgcontainer">
+        <span onclick="document.getElementById('id05').style.display='none'" class="close">&times;</span>
+      </div>
+      <div class="containerTwo">
+        <table>
+          <tr>
+            <td>
+              <label for="uname"><b>Password</b></label>
+            </td>
+            <td>
+              <div class="infoButton">
+                <a href="#" title="Requirments" data-toggle="popover" data-trigger="focus"
+                  data-content="Must be at least 6 numerical digits">&#9432;</a>
+            </td>
+      </div>
+      </tr>
+      </table>
+      <input type="password" placeholder="Enter Password" name="uname" id="logoutPassword" required>
+      <button onclick="logout()" type="button" class="logoutButton">Logout</button>
+      <div class="errorText" id="errorTextIDK" align="center"></div>
+      <div class="newAcc" align="center" type="button" onclick="openDiffAcc()">Log into different account</div>
+  </div>
+  </form>
+  </div>
+
+
+  <div id="id06" class="hamburger">
+    <div class="hamburger-content animate">
+      <div class="hamburger-buttons">
+
+        <button onclick="openLog()">Student Log</button>
+        <button onclick="openAddStu()">Add Student</button>
+        <button onclick="openRemoveStu()">Remove Student</button>
+        <button onclick="openLogout()">Log out</button>
+
+      </div>
+    </div>
+  </div>
+
+
+  <div id="id07" class="modal">
+    <form class="modal-content animate">
+      <div class="imgcontainer">
+        <span onclick="document.getElementById('id07').style.display='none'" class="close">&times;</span>
+      </div>
+      <div class="containerTwo">
+        <table>
+          <tr>
+            <td>
+              <label for="uname"><b>Password</b></label>
+            </td>
+            <td>
+              <div class="infoButton">
+                <a href="#" title="Requirments" data-toggle="popover" data-trigger="focus"
+                  data-content="Must be at least 6 numerical digits">&#9432;</a>
+            </td>
+      </div>
+      </tr>
+      </table>
+      <input type="password" placeholder="Enter Password" name="uname" id="authorizePassword" required>
+      <button onclick="changeAuth()" align="center" type="button">Authorize</button>
+      <div class="errorText" id="errorTextFour" align="center"></div>
+  </div>
+  </form>
+  </div>
+
+  <div id="id08" class="modal">
+    <form class="modal-content animate">
+      <div class="imgcontainer">
+        <span onclick="document.getElementById('id08').style.display='none'" class="close">&times;</span>
+      </div>
+      <div class="containerTwo">
+        <table>
+          <tr>
+            <td>
+              <label for="uname"><b>Student Full Name</b></label>
+            </td>
+            <td>
+              <a href="#" title="Requirments" data-toggle="popover" data-trigger="focus"
+                data-content="&#x2022; Must be as seen in dropdown">&#9432;</a>
+            </td>
+          </tr>
+        </table>
+        <input type="text" placeholder="Enter name" name="fname" id="fnameR" required>
+
+
+        <label for="psw"><b>Class period</b></label>
+        <select id="periodR" name="psw" class="classPeriodSelect" required>
+          <option>---Choose hour---</option>
+          <option>0</option>
+          <option>1</option>
+          <option>2</option>
+          <option>3</option>
+          <option>4</option>
+          <option>5</option>
+          <option>6</option>
+          <option>7</option>
+          <option>8</option>
+        </select>
+        <div class="errorText" id="errorTextFive" align="center"></div>
+        <button onclick="removeStudent()" class="logoutButton" type="button">Remove Student</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    //Moved from script.js for access by popups
+    //Printed pass design goal:
+    /*
+Student.........................
+Reason..........................
+From............................
+To..............................
+Date...........  Time...........
+Staff...........................
+~
+
+________________________________
+             .,******,..
+     ,@@@& ,@@@@@@@@@@@( &@@.
+%@@@@@@@@%..%@@@@/ %@@@/
+@@@@@@@@@@@@@@@*  @@.@@@
+  &@.      @@@@@( .@@@@#
+     (%.  *@@@(  ,@@@@
+       @@@&  /@@@@(
+          ****
+*/
+    var selectedStudent = "";
+    var selectedStaff = "";
+    var selectedReason = "";
+    var selectedFrom = "";
+    var selectedTo = "";
+    var selectedHour = 0;//Used globally by print, format functions, dropdown cases eg. restroom, etc.
+    var teacherLogged = 0;//Teacher object as logged in. In use at times, set at most opportunities, often as JSON.parse(localStorage.getItem(username)) in popup code and special cases in webpage code
+    var determinedTime;
+    var determinedDate;//Globally used similar to selectedStudent, but is not set by dropdown, rather by function formatPass(). Used with selectedStudent in student log
+    var loggedIn = false;//Allows print to run similar to teacherLogged existance
+
+
+    function studentChange(studentField) {
+      selectedStudent = studentField.options[studentField.selectedIndex].innerHTML;
+      formatPass();//Runs as a live preview checking tool for most changes
+    }
+
+    function reasonChange(reasonDropdown) {
+      selectedReason = reasonDropdown.options[reasonDropdown.selectedIndex].innerHTML;
+      //If other is(n't) chosen, (do not) display. If both other fields are displayed, set toOther margin top negative for fitting. If restroom is chosen, the destination must also be the restroom.
+      if (selectedReason == "Other") {
+        document.getElementById("reasonOther").style.display = "block";
+        if (document.querySelector('#to').value=="Other") {
+          document.getElementById("toOther").style.marginTop = '-8px';
+        }
+      }
+      else {
+        document.getElementById("reasonOther").style.display = "none";
+        document.getElementById("toOther").style.marginTop = '0px';
+        if (selectedReason == "Restroom") {
+          document.querySelector('#to').value = "Restroom";
+          selectedTo = "Restroom";
+        }
+      }
+      formatPass();
+    }
+
+    function toChange(toDropdown) {
+      selectedTo = toDropdown.options[toDropdown.selectedIndex].innerHTML;
+      //Same functionality as reasonChange nested Ifs, sub if restroom is chosen, the *reason* must also be the restroom.
+      if (selectedTo == "Other") {
+        document.getElementById("toOther").style.display = "block";
+        document.getElementById("toOther").style.marginTop = '0px';
+        if (document.querySelector('#reason').value=="Other") {
+          document.getElementById("toOther").style.marginTop = '-8px';
+        }
+      }
+      else {
+        document.getElementById("toOther").style.display = "none";
+        if (selectedTo == "Restroom") {
+          document.querySelector('#reason').value = "Restroom";
+          selectedReason = "Restroom";
+        }
+      }
+      formatPass();
+    }
+
+    //Attempted live update on other text fields keyup. Too little time and the type="text" made it look ugly so these go unused. They do not break the code.
+    toOther.addEventListener("keyup", function (e) {
+      selectedTo = this.value;
+    });
+    reasonOther.addEventListener("keyup", function (e) {
+      selectedReason = this.value;
+    });
+
+    function hourChange(hourDropdown) {
+      teacherLogged = JSON.parse(localStorage.getItem(username));
+      selectedHour = hourDropdown.options[hourDropdown.selectedIndex].innerHTML;
+      if (selectedHour == "---Choose hour---") {
+        selectedHour = 0;//sets a default case (zero hour) if no hour is chosen. If not set, the last hour selected is used in student dropdown
+      }
+
+      let tempStudent = new Option('---Choose name---', undefined);//tempStudent is always a student represented as an option for a select element, sub this moment it is used to add the query
+      const studentSelect = document.querySelector('#student');//set to the student dropdown
+
+      while (studentSelect.options.length > 0) {
+        studentSelect.remove(0);
+      }//Empty the dropdown, also resets selected element to first option added (---Choose name---)
+
+      studentSelect.add(tempStudent, undefined);
+      //For every student the teacher logged in has added, first determine if they are in the chosen hour and second add them to the dropdown. The "From" in the pass is the last room number to be accessed in the loop, or the most recently added student's room number in that hour
+      for (let i = 0; i < teacherLogged.students.length; i++) {
+        if (teacherLogged.students[i].hour == selectedHour) {
+          tempStudent = new Option(teacherLogged.students[i].name, undefined);
+          studentSelect.add(tempStudent, undefined);
+          selectedFrom = teacherLogged.students[i].roomNumber;
+        }
+      }
+    }
+
+    function PrintStart() {
+      //Only runs if someone is logged in
+      if (loggedIn) {
+        //Checks if an other field is chosen, ensures the other value is formatted and printed even if update code does not run
+        var otherR = false;
+        var otherT = false;
+        if (selectedReason == "Other") {
+          otherR = true;
+          selectedReason = document.getElementById("reasonOther").value;
+        }
+        if (selectedTo == "Other") {
+          otherT = true;
+          selectedTo = document.getElementById("toOther").value;
+        }
+        formatPass();//Sets the pass display #passElement to a formatted version using all chosen strings
+        addToLog(1);//Adds the print attempt (even if it fails eg. the printer is not connected) to the log
+        PrintPass("passElement");//Runs a print function by creating a new window with passElement
+        if (otherR) {selectedReason = "Other"}
+        if (otherT) {selectedTo = "Other"}//Not quite sure the reason, probably to ensure anything checking dropdown values can verify between a dropdown "Restroom" and an other "Restroom" as to what is actually chosen in the dropdown
+      }
+    }
+
+    function formatLine(category, enteredVal) {
+      //Runs several times through formatPass()
+      var tempEnteredVal = "";
+      for (var i = 0; i < enteredVal.length; i++) {
+        if (enteredVal.charAt(i) == '.') {
+          tempEnteredVal = tempEnteredVal.concat(" ");
+        }//Ensures the seperator between required queries (Student.) is not present in value to avoid confusion (eg. "Student.Mrs.Robbinson-Paschalson")
+        else {
+          tempEnteredVal = tempEnteredVal.concat(enteredVal.charAt(i));
+        }//Passes all other valid characters
+      }
+      enteredVal = tempEnteredVal;//Returns the checked string
+      var formattedLine = category;//Starts with query (Student.)
+      var tempRemainingChar = (32 - category.length - enteredVal.length);//Determines amount of seperators to add
+      if (tempRemainingChar <= 0) {
+        formattedLine = formattedLine.concat(enteredVal.substring(0, 32 - category.length));
+      }//If no seperators can be added, then the value is at or above max length and may be added without use of seperators, to the maximum amount as determined by 32-category.length
+      else {
+        for (var i = 0; i < tempRemainingChar; i++) {
+          formattedLine = formattedLine.concat(".");
+        }//Adds seperators
+        formattedLine = formattedLine.concat(enteredVal);//Adds value uncapped
+      }
+      while (formattedLine.includes(" ")) {
+        var spaceIndex = formattedLine.indexOf(" ");
+        formattedLine = formattedLine.substring(0, spaceIndex) + "&nbsp;" + formattedLine.substring(spaceIndex + 1);
+      }//Prevents whitespace being combined by replacing all original spaces and periods with non break spaces (eg. "Student.Mrs Robbinson-Paschalson")
+      return formattedLine;
+    }
+
+    function formatPass() {
+      //Formats 5 lines of the pass that have only one value. The required category (eg. Student) with one seperator (.) and the chosen value to print (eg. selectedStudent) for such category is passed to formatLine() to be returned and set to a temporary formatted line in the pass (eg. tempStudentLine)
+      var tempStudentLine = formatLine("Student.", selectedStudent);
+      teacherLogged = JSON.parse(localStorage.getItem(username));//Ensures the name of the teacher logged in is used
+      var tempStaffLine = formatLine("Staff.", teacherLogged.first.concat(" " + teacherLogged.last));//First and Last distinction not quite necessary but helps at security verifying school employees use the service
+      var tempReasonLine = formatLine("Reason.", selectedReason);
+      var tempFromLine = formatLine("From.", selectedFrom);
+      var tempToLine = formatLine("To.", selectedTo);
+
+      //Date and time formatting done in formatPass() because of live update to time used and both being on the same line in #passElement
+      var currentDate = new Date();//Get the current time
+      determinedDate = (currentDate.getMonth() + 1) + "/" + currentDate.getDate();//Sets the globally accessible variable to a formatted date for addToLog() with nonstandard positioning (and length) of information
+
+      var formattedHours = currentDate.getHours();
+      var ampm = "&nbsp;AM";
+      if (formattedHours > 11) {formattedHours -= 12; ampm = "&nbsp;PM";}//Formats the hour as 12 hour time instead of 24
+      if (formattedHours == 0) {formattedHours = 12;}//00:00 formatted as 12:00
+      var formattedMinutes = currentDate.getMinutes()
+      if (formattedMinutes < 10) {formattedMinutes = "0" + formattedMinutes;}//Two digits always used
+      determinedTime = formattedHours + ":" + formattedMinutes;//Sets the globally accessible variable to a formatted time for addToLog() with standardized positions of information
+
+      //Runs similar to formatLine() but 15 character totals instead of 32. Because of mostly standardized lengths the required text includes multple seperators (.)
+      var tempDateLine = "Date......"
+      tempRemaingingChar = 5 - determinedDate.length;
+      for (var i = 0; i < tempRemaingingChar; i++) {
+        tempDateLine = tempDateLine.concat(".");
+      }
+      tempDateLine = tempDateLine.concat(determinedDate + '&nbsp;&nbsp;');//Half as long minus one as full line tempXLine plus two non broken whitespaces. Otherwise whitespaces are combined and destroy 32 character total
+      var tempTimeLine = "Time..."
+      tempRemaingingChar = 5 - determinedTime.length;
+      for (var i = 0; i < tempRemaingingChar; i++) {
+        tempTimeLine = tempTimeLine.concat(".");
+      }
+      tempTimeLine = tempTimeLine.concat(determinedTime + ampm);
+
+      document.getElementById("passElement").innerHTML = tempStudentLine + '<br>' + tempReasonLine + '<br>' + tempFromLine + '<br>' + tempToLine + '<br>' + tempDateLine + tempTimeLine + '<br>' + tempStaffLine + '<br>' + "~" + '<br><br>' + "________________________________";//Individual lines pushed into #passElement with <br> breaks as needed. Two breaks worth of space used for signature field. No longer uses Wildcat logo representation for pass verification due to repeated ugly designs
+    }
+
+
+    //Fragile like #passElement, I don't want to touch with commments even. Creates a new window with minimum paper lengths, writes the little verification of the website title, and writes the text as appears in #passElement. This window is not formatted by any CSS, but this is negligible as the printer is currently set to soft text printing rather than image printing anyway. The writing ability closes and a print page is ran. After the user clicks print or presses enter, the receipt printer will print. If a different printer is chosen when the print goes through, the log will still add the student and they will need to check back in to try again. The chosen printer can be verified by user by scaling the window horizontally to see the print dialog. By the user pressing print or enter, they agree they were authenticated to use the service and will receive a signature from a teacher before exiting their room. This is actually nowhere on the website as a clause right now so oopsie
+    function PrintPass(passElement) {
+      var mywindow = window.open('', 'PRINT', 'height=210,width=58');
+
+      mywindow.document.write('<html><head><title>' + document.title + '</title>');
+      mywindow.document.write('</head><body style="width:100%;line-height:0.5;">');
+      mywindow.document.write('<p>' + document.title + '</p>');
+      mywindow.document.write(document.getElementById(passElement).innerHTML);
+      mywindow.document.write('</body></html>');
+
+      mywindow.document.close();
+      mywindow.focus();
+
+      mywindow.print();
+      mywindow.close();
+
+      return true;
+    }
+
+    //'webpage' code ^^^
+    //Me, the webpage programmer, apologize for the popup programmer's use of copy/paste instead of functions or running after if statements. If it gives you any peace of mind I do know where they live and can mail them a letter every month to remedy this situation to the best of their ability.
+    
+
+
+
+
+
+
+
+    //'popup' code vvv
+
+    // Get the modal
+    var modal = document.getElementById('id01');
+    var modalTwo = document.getElementById('id02');
+    var modalThree = document.getElementById('id03');
+    var modalFour = document.getElementById('id04');
+    var modalFive = document.getElementById('id05');
+    var modalSix = document.getElementById('id06');
+    var modalSeven = document.getElementById('id07');
+    var modalEight = document.getElementById('id08');
+    var username = localStorage.getItem("lastLogin");
+    var dayOffset = 0;
+    if (!(!username)) {
+      loggedIn = true;
+      loginButton.style.display = 'none';
+      logoutText.style.display = 'block';
+      hamburgerMenu.style.display = 'block';
+      loginMessage.style.display = 'none';
+      var information = JSON.parse(localStorage.getItem(username));
+      teacherLogged = information;
+      var result_display = document.getElementById('logoutText');
+      result_display.innerHTML += information.first + " " + information.last;
+      hourChange(hour);
+    }
+    else {
+      loggedIn = false;
+      loginButton.style.display = 'block';
+      logoutText.style.display = 'none';
+      hamburgerMenu.style.display = 'none';
+      loginMessage.style.display = 'block';
+    }
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function (event) {
+      if (event.target == modal || event.target == modalTwo || event.target == modalThree || event.target == modalFour || event.target == modalFive || event.target == modalSix || event.target == modalSeven || event.target == modalEight) {
+        document.getElementById("logoutPassword").value = "";
+        document.getElementById("newPassword").value = "";
+        document.getElementById("confirmPassword").value = "";
+        document.getElementById("password").value = "";
+        document.getElementById("authorizePassword").value = "";
+        modal.style.display = "none";
+        modalTwo.style.display = "none";
+        modalThree.style.display = "none";
+        modalFive.style.display = "none";
+        modalFour.style.display = "none";
+        modalSix.style.display = "none";
+        modalSeven.style.display = "none";
+        modalEight.style.display = "none";
+      }
+    }
+
+    //validate username and password
+    function confirm() {
+      username = document.getElementById("username").value;
+      var password = document.getElementById("password").value;
+      var information = JSON.parse(localStorage.getItem(username));
+
+      if (information !== null) {
+
+        if (information.email == username && information.password == password) {
+          teacherLogged = information;
+          loggedIn = true;
+          loginButton.style.display = 'none';
+          loginMessage.style.display = 'none';
+          hamburgerMenu.style.display = 'block';
+          hourChange(hour);
+          localStorage.setItem("lastLogin", username);
+          window.location.reload();
+        }
+        else {
+          var result_display = document.getElementById('errorText');
+          result_display.innerHTML = "**Username or password is incorrect**";
+          clearErrorText(result_display);
+        }
+      }
+      else {
+        var result_display = document.getElementById('errorText');
+        result_display.innerHTML = "**Username does not exist**";
+        clearErrorText(result_display);
+      }
+    }
+
+    function openDiffAcc() {
+      document.getElementById('id01').style.display = 'block';
+      document.getElementById('id05').style.display = 'none';
+    }
+
+
+    function createAcc() {
+      var newUsername = document.getElementById("newUsername").value;
+      var newPassword = document.getElementById("newPassword").value;
+      var confirmPassword = document.getElementById("confirmPassword").value;
+      var teacherName = document.getElementById("first").value;
+      var teacherLast = document.getElementById("last").value;
+      if (newUsername != "" && newPassword != "" && confirmPassword != "") {
+        if (JSON.parse(localStorage.getItem(newUsername)) == null) {
+          if ((newUsername.includes("@myunit5.org") || newUsername.includes("@unit5.org")) && !newUsername.includes(1) && !newUsername.includes(2) && !newUsername.includes(3) && !newUsername.includes(4) && !newUsername.includes(6) && !newUsername.includes(7) && !newUsername.includes(8) && !newUsername.includes(9)) {
+            if (newPassword.length >= 6) {
+              if (newPassword == confirmPassword) {
+                if (onlyNums(newPassword) == true) {
+                  var person = new Object();
+                  person.email = newUsername;
+                  person.password = newPassword;
+                  person.first = teacherName;
+                  person.last = teacherLast;
+                  person.students = [];
+                  person.timeLog = [];
+                  localStorage.setItem(newUsername, JSON.stringify(person));
+                  var result_display = document.getElementById("errorTextTwo");
+                  result_display.innerHTML = "Account was successfully created";
+                  document.getElementById("errorTextTwo").classList = "confirmText";
+                  clearErrorText(result_display);
+                }
+                else {
+                  var result_display = document.getElementById('errorTextTwo');
+                  result_display.innerHTML = "**Password must only contains digits**";
+                  document.getElementById("errorTextTwo").classList = "errorText";
+                  clearErrorText(result_display);
+                }
+              }
+              else {
+                var result_display = document.getElementById('errorTextTwo');
+                result_display.innerHTML = "**Passwords do not match**";
+                document.getElementById("errorTextTwo").classList = "errorText";
+                clearErrorText(result_display);
+              }
+            }
+            else {
+              var result_display = document.getElementById('errorTextTwo');
+              result_display.innerHTML = "**Password not long enough. Must be at least 6 digits**";
+              document.getElementById("errorTextTwo").classList = "errorText";
+              clearErrorText(result_display);
+            }
+          }
+          else {
+            var result_display = document.getElementById('errorTextTwo');
+            result_display.innerHTML = "**You do not have permission to create an account**";
+            document.getElementById("errorTextTwo").classList = "errorText";
+            clearErrorText(result_display);
+          }
+        }
+        else {
+          var result_display = document.getElementById('errorTextTwo');
+          result_display.innerHTML = "**Email is already linked to an account**";
+          document.getElementById("errorTextTwo").classList = "errorText";
+          clearErrorText(result_display);
+        }
+      }
+      else {
+        var result_display = document.getElementById('errorTextTwo');
+        result_display.innerHTML = "**One or more fields are empty**";
+        document.getElementById("errorTextTwo").classList = "errorText";
+        clearErrorText(result_display);
+      }
+
+    }
+    function addStudent() {
+      var student = document.getElementById("fname").value;
+      var studentArray = [];
+      while (student.includes(",")) {
+        studentArray.push(student.substring(0, student.indexOf(",")));
+        student = student.substring(student.indexOf(",") + 1);
+      }
+      studentArray.push(student);
+      for (var i = 0; i < studentArray.length; i++) {
+        while (studentArray[i].charAt(0) == ' ') {
+          studentArray[i] = studentArray[i].substring(1);
+        }
+        while (studentArray[i].charAt(studentArray[i].length - 1) == ' ') {
+          studentArray[i] = studentArray[i].substring(0, studentArray[i].length - 1);
+        }
+      }
+      var period = document.getElementById("period").value;
+      var roomNum = document.getElementById("roomNum").value;
+      if (student != "" && period != "" && roomNum != "") {
+        if ((roomNum >= 100 && roomNum <= 114) || roomNum == 117 || (roomNum >= 121 && roomNum <= 130) || roomNum == 132 || roomNum == 134 || roomNum == 136 || roomNum == 144 || roomNum == 145 || roomNum == 1103 || roomNum == 1104 || roomNum == 1201 || roomNum == 1301 || (roomNum >= 200 && roomNum <= 216) || (roomNum >= 221 && roomNum <= 235) || (roomNum >= 1000 && roomNum <= 1012) || (roomNum >= 2000 && roomNum <= 2013) || roomNum == "South Gym" || roomNum == "North Gym" || roomNum == "IMC" || roomNum == "Pool" || roomNum == "Guidance Office" || roomNum == "Main Office" || roomNum == "Nurse's Office") {//conditions for roomNumber
+          var personTwo = JSON.parse(localStorage.getItem(username));
+          for (var i = 0; i < studentArray.length; i++) {
+            var newStudent = new Object();
+            newStudent.name = studentArray[i];
+            newStudent.hour = period;
+            newStudent.roomNumber = roomNum;
+            personTwo.students.push(newStudent);
+          }
+          teacherLogged = personTwo;
+          localStorage.setItem(username, JSON.stringify(personTwo));
+          //fade in
+          var result_display = document.getElementById("errorTextThree");
+          result_display.innerHTML = "Student was succesfully added";
+          document.getElementById("errorTextThree").classList = "confirmText";
+          document.getElementById("fname").value = "";
+          hourChange(hour);
+          clearErrorText(result_display);
+        }
+        else {
+          var result_display = document.getElementById("errorTextThree");
+          result_display.innerHTML = "**Room number does not exist**";
+          document.getElementById("errorTextThree").classList = "errorText";
+          clearErrorText(result_display);
+        }
+      }
+      else {
+        var result_display = document.getElementById('errorTextThree');
+        result_display.innerHTML = "**One or more fields are empty**";
+        document.getElementById("errorTextThree").classList = "errorText";
+        clearErrorText(result_display);
+      }
+    }
+
+    function openCreateAcc() {
+      modal.style.display = "none";
+      document.getElementById('id02').style.display = 'block';
+    }
+
+    function openAddStu() {
+      modal.style.display = "none";
+      modalTwo.style.display = "none";
+      document.getElementById('id03').style.display = 'block';
+      document.getElementById('id06').style.display = 'none';
+    }
+
+    function openRemoveStu() {
+      document.getElementById('id06').style.display = 'none'
+      document.getElementById('id08').style.display = 'block'
+    }
+
+
+    function openLog() {
+      updateLog();
+      document.getElementById('id04').style.display = 'block';
+      document.getElementById('id06').style.display = 'none';
+    }
+
+    function openLogout() {
+      document.getElementById('id05').style.display = 'block'
+      document.getElementById('id06').style.display = 'none';
+    }
+
+    var authorized = false;
+    function openHamburger() {
+      if (!authorized) {
+        document.getElementById('id07').style.display = 'block'
+      }
+      else {
+        var x = document.getElementById("id06");
+        if (x.style.display === "block") {
+          x.style.display = "none";
+        } else {
+          x.style.display = "block";
+        }
+        document.getElementById('id07').style.display = 'none'
+      }
+    }
+
+    function removeStudent() {
+      var student = document.getElementById("fnameR").value;
+      var period = document.getElementById("periodR").value;
+      var teacherInfo = JSON.parse(localStorage.getItem(username));
+      for (var x = 0; x < teacherInfo.students.length; x++) {
+        console.log(teacherInfo.students[x].name);
+        if (teacherInfo.students[x].name == student && teacherInfo.students[x].hour == period) {
+          teacherInfo.students.splice(x, 1);
+          localStorage.setItem(username, JSON.stringify(teacherInfo));
+          var result_display = document.getElementById('errorTextFive');
+          result_display.innerHTML = "**Student successfully removed**";
+          document.getElementById("errorTextFive").classList = "confirmText";
+          clearErrorText(result_display);
+        }
+        else {
+          var result_display = document.getElementById('errorTextFive');
+          result_display.innerHTML = "**One or more pieces of information are incorrect**";
+          document.getElementById("errorTextFive").classList = "errorText";
+          clearErrorText(result_display);
+        }
+      }
+      hourChange(hour);
+    }
+
+    function changeAuth() {
+      var password = document.getElementById("authorizePassword").value;
+      var teacherInfo = JSON.parse(localStorage.getItem(username));
+      if (password == teacherInfo.password) {
+        authorized = true;
+        openHamburger();
+      }
+      else {
+        var result_display = document.getElementById('errorTextFour');
+        result_display.innerHTML = "**Password is incorrect**";
+        clearErrorText(result_display);
+      }
+    }
+
+    function onlyNums(str) {
+      return /^[0-9]+$/.test(str);
+    }
+
+    function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+    async function clearErrorText(name) {
+    await sleep(3000);
+        name.innerHTML = " ";
+}
+
+
+
+
+    function logout() {
+      var password = document.getElementById("logoutPassword").value;
+      var information = JSON.parse(localStorage.getItem(username));
+      if (password == information.password) {
+        localStorage.setItem("lastLogin", "");
+        window.location.reload();
+      }
+      else {
+        var result_display = document.getElementById('errorTextIDK');
+        result_display.innerHTML = "**Incorrect password. Failed to logout**"
+        clearErrorText(result_display);
+      }
+    }
+
+    function addToLog(run) {
+      //adds data to log
+      if (run == 1) {
+        const dropdown = document.querySelector("#student");
+        const dropdownToAdd = document.querySelector("#checkBackIn");
+        var teacherInfo = JSON.parse(localStorage.getItem(username));
+        var stamp = new Object();
+        var date = new Date();
+        stamp.name = selectedStudent;
+        stamp.period = selectedHour;
+        stamp.time = determinedTime
+        stamp.timeData = Date.now();
+        console.log(stamp.timeData);
+        stamp.date = determinedDate;
+        stamp.timeBack = "out";
+        stamp.timeGone = "out";
+        let nameToAdd = new Option(stamp.name, undefined);
+        dropdownToAdd.add(nameToAdd, undefined);
+        dropdown.remove(dropdown.selectedIndex);
+        teacherInfo.timeLog.push(stamp);
+        localStorage.setItem(username, JSON.stringify(teacherInfo));
+      }
+
+      if (run == 2) {
+        var end = Date.now();
+        var teacherInfo = JSON.parse(localStorage.getItem(username));
+        const dropdownToAdd = document.querySelector("#student");
+        const dropdown = document.querySelector("#checkBackIn");
+        var date = new Date();
+        var studentOut = dropdown.options[dropdown.selectedIndex].text;
+        var formattedHours = date.getHours();
+        var ampm = "&nbsp;AM";
+        if (formattedHours > 11) {formattedHours -= 12; ampm = "&nbsp;PM";}
+        if (formattedHours == 0) {formattedHours = 12;}
+        var formattedMinutes = date.getMinutes()
+        if (formattedMinutes < 10) {formattedMinutes = "0" + formattedMinutes;}
+        var backTime = formattedHours + ":" + formattedMinutes;
+        for (var n = 1; n < teacherInfo.timeLog.length; n++) {
+          if (teacherInfo.timeLog[n].name == studentOut && teacherInfo.timeLog[n].timeGone == "out") {
+            const start = teacherInfo.timeLog[n].timeData;
+            console.log(n);
+            console.log(start);
+            console.log(end);
+            teacherInfo.timeLog[n].timeBack = backTime;
+            teacherInfo.timeLog[n].timeGone = Math.round((end - start) / 60000);
+            console.log("DIFF" + teacherInfo.timeLog[n].timeGone);
+            let nameToAdd = new Option(teacherInfo.timeLog[n].name, undefined);
+            dropdownToAdd.add(nameToAdd, undefined);
+            dropdown.remove(dropdown.selectedIndex);
+            localStorage.setItem(username, JSON.stringify(teacherInfo));
+            updateLog();
+            break;
+          }
+        }
+      }
+    }
+
+    function updateLog() {
+      var rowIndex = 1;
+      var teacherInfo = JSON.parse(localStorage.getItem(username));
+      var table = document.getElementById("logTable");
+      var date = new Date();
+      var dateNeeded = date.getDate() + dayOffset;
+      var result_display = document.getElementById("logTitle");
+      if (table.rows.length != 1) {
+        var tableLength = table.rows.length;
+        for (var n = 1; n < tableLength; n++) {
+          table.deleteRow(1);
+        }
+      }
+      date.setDate(date.getDate() + dayOffset);
+      date = (date.getMonth() + 1) + "/" + date.getDate();
+      for (var i = 0; i < teacherInfo.timeLog.length; i++) {
+        if ((teacherInfo.timeLog)[i].date.substring(3) == dateNeeded) {
+          result_display.innerHTML = "Student Log (" + date + ")";
+          var row = table.insertRow(rowIndex);
+          var cell1 = row.insertCell(0);
+          var cell2 = row.insertCell(1);
+          var cell3 = row.insertCell(2);
+          var cell4 = row.insertCell(3);
+          var cell5 = row.insertCell(4);
+          cell1.innerHTML = teacherInfo.timeLog[i].name;
+          cell2.innerHTML = teacherInfo.timeLog[i].period;
+          cell3.innerHTML = teacherInfo.timeLog[i].time;
+          cell4.innerHTML = teacherInfo.timeLog[i].timeBack;
+          cell5.innerHTML = teacherInfo.timeLog[i].timeGone;
+          rowIndex++;
+          /*
+          cell1.innerHTML = timeLog[i].name;
+          cell2.innerHTML = timeLog[i].period;
+          cell3.innerHTML = timeLog[i].time;
+          cell4.innerHTML = timeLog[i].timeBack; */
+        }
+      }
+    }
+
+    function moveLeft() {
+      dayOffset--;
+      var date = new Date();
+      date.setDate(date.getDate() + dayOffset);
+      date = (date.getMonth() + 1) + "/" + date.getDate();
+      var result_display = document.getElementById("logTitle");
+      result_display.innerHTML = "Student Log (" + date + ")";
+      updateLog();
+    }
+
+    function moveRight() {
+      dayOffset++;
+      var date = new Date();
+      date.setDate(date.getDate() + dayOffset);
+      date = (date.getMonth() + 1) + "/" + date.getDate();
+      var result_display = document.getElementById("logTitle");
+      result_display.innerHTML = "Student Log (" + date + ")";
+      updateLog();
+    }
+
+    $(document).ready(function () {
+      $('[data-toggle="popover"]').popover();
+    });
+/*Code for I thing
+    <a href="#" title="Dismissible popover" data-toggle="popover" data-trigger="focus" data-content="Click anywhere in the document to close this popover">Click me</a>
+    </div>
+      */
+
+
+
+  </script>
+
+</body>
+
+</html>
